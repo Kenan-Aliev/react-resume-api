@@ -16,4 +16,15 @@ router.post('/add', authMiddleware, async (req, res) => {
     }
 })
 
+router.get('/getUsersResumes', authMiddleware, async (req, res) => {
+    try {
+        const resumes = await Resume.find({userId: req.user.id})
+        return res.status(200).json({
+            resumes
+        })
+    } catch (e) {
+        console.log(e)
+    }
+})
+
 module.exports = router

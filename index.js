@@ -3,6 +3,7 @@ const config = require('config')
 const mongoose = require('mongoose')
 const session = require('express-session')
 const passport = require('passport')
+const cors = require('cors')
 const MongoStore = require('connect-mongodb-session')(session)
 const server = express()
 const authRoutes = require('./routes/auth')
@@ -24,6 +25,8 @@ server.use(session({
     }
 ))
 
+
+server.use(cors())
 server.use(express.json())
 server.use(passport.initialize())
 server.use(passport.session())
