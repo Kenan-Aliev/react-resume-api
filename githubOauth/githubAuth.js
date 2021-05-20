@@ -15,36 +15,34 @@ router.get('/failed', (req, res) => {
 
 router.get('/successAuth', passport.authenticate('github', {failureRedirect: '/failed'}),
     (req, res) => {
+        const token = jwt.sign({id: req.user._id}, config.get('SECRET_KEY'), {expiresIn: '1m'})
         req.session.save((err) => {
             if (err) {
                 throw err
             }
-            res.json({id: req.user._id, email: req.user.email})
-
+            res.redirect(`http://localhost:3000/auth/github/${token}`)
         })
-        // const token = jwt.sign({id: req.user._id}, config.get('secretKey'), {expiresIn: '1m'})
-        // res.redirect('http://localhost:3000/google/auth/' + token)
     }
 )
 
-// router.post('/token/checkout', async (req, res) => {
-//     try {
-//         const {token} = req.body
-//         const decode = jwt.verify(token, config.get('secretKey'))
-//         if (!decode) {
-//             return res.status(400).json({message: 'Неверный токен'})
-//         }
-//         const user = await User.findOne({_id: decode.id})
-//         const newToken = jwt.sign({id: user._id}, config.get('secretKey'), {expiresIn: '24h'})
-//         return res.json({
-//             message: "ОК",
-//             newToken
-//         })
-//     } catch (error) {
-//         return res.status(500).json({message: 'Server error', error})
-//     }
-//
-// })
+router.post('/token/checkout', async (req, res) => {
+    try {
+        const {token} = req.body
+        const decode = jwt.verify(token, config.get('SECRET_KEY'))
+        if (!decode) {
+            return res.status(400).json({message: 'Неверный токен'})
+        }
+        const user = await User.findOne({_id: decode.id})
+        const newToken = jwt.sign({id: user._id}, config.get('SECRET_KEY'), {expiresIn: '24h'})
+        return res.status(200).json({
+            message: "GitHub авторизация прошла успешно",
+            newToken
+        })
+    } catch (error) {
+        return res.status(500).json({message: 'Server error', error})
+    }
+
+})
 
 router.get('/logout', (req, res) => {
     req.session.destroy()

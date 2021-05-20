@@ -47,8 +47,8 @@ router.post('/registration',
             await transporter.sendMail(regEmail(email, token))
             return res.status(200).json({message: "Перейдите на почту чтобы подтвердить регистрацию"})
 
-        } catch (e) {
-            console.log(e)
+        } catch (error) {
+            return res.status(500).json({message:"Что-то пошло не так,повторите попытку",error})
         }
     })
 
@@ -64,8 +64,8 @@ router.post('/verification', async (req, res) => {
         })
         await newUser.save()
         return res.status(200).json({message: "Вы успешно зарегистрировались на нашем сайте"})
-    } catch (e) {
-        console.log(e)
+    } catch (error) {
+        return res.status(500).json({message:"Неверный токен или срок его действия истек",error})
     }
 })
 
