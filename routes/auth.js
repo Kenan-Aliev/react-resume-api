@@ -24,15 +24,15 @@ const transporter = nodemailer.createTransport({
 
 router.post('/registration',
     [
-        check('email', 'Uncorrect email').isEmail(),
-        check('username', 'Username must be longer than 5 symbols').isString().isLength({min: 5}),
-        check('password', 'Password must be longer than 7 symbols').isLength({min: 7})
+        check('email', 'Неверный формат email').isEmail(),
+        check('username', 'Имя должно быть минимум 5 символов').isString().isLength({min: 5}),
+        check('password', 'Пароль должен быть минимум 7 символов').isLength({min: 7})
     ],
     async (req, res) => {
         try {
             const error = validationResult(req)
             if (!error.isEmpty()) {
-                return res.status(400).json({message: "Заполните правильно форму", error})
+                return res.status(400).json({message:error.errors[0].msg})
             }
             const {email, username, password} = req.body
             const candidateEmail = await User.findOne({email})
