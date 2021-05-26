@@ -11,8 +11,9 @@ router.post('/add', authMiddleware, async (req, res) => {
             userId: req.user._id
         })
         await newResume.save()
+        return res.status(200).json({message:"Вы успешно создали резюме"})
     } catch (error) {
-        console.log(error)
+        return res.status(500).json({message:"Что-то пошло не так",error})
     }
 })
 
