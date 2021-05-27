@@ -11,5 +11,6 @@ module.exports = function(req,res,next){
         return res.status(400).json({message:"Неверный токен"})
     }
     req.user = decode
+    console.log(req.user)
     next()
 }

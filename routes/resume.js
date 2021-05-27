@@ -8,7 +8,7 @@ router.post('/add', authMiddleware, async (req, res) => {
         const newResume = new Resume({
             ...req.body,
             email: req.user.email,
-            userId: req.user._id
+            userId: req.user.id
         })
         await newResume.save()
         return res.status(200).json({message:"Вы успешно создали резюме"})
@@ -24,7 +24,7 @@ router.get('/getUsersResumes', authMiddleware, async (req, res) => {
             resumes
         })
     } catch (e) {
-        console.log(e)
+        return res.status(500).json({message:"Что-то пошло не так"})
     }
 })
 
