@@ -11,7 +11,6 @@ const resumeSchema = new Schema({
     city: {type: String, required: true},
     sphere: {type: String, required: true},
     wished_salary: {type: Number, required: true},
-    description:{type: String, required: true},
     busyness: {type: String, required: true},
     userId: {type: ObjectId, ref: 'users'},
     work_exp: [
@@ -28,7 +27,8 @@ const resumeSchema = new Schema({
         {
             profession: {type: String},
             education_institution: {type: String},
-            year_of_ending: {type: Number}           
+            year_of_ending: {type: Number},
+            duration: {type: String},
         }
     ],
     foreign_languages: [
