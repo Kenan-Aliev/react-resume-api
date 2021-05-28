@@ -4,8 +4,9 @@ const resumeSchema = new Schema({
     name: {type: String, required: true},
     surname: {type: String, required: true},
     patronymic: {type: String, required: true},
-    birthday: {type: Date, required: true},
+    birthday: {type: String, required: true},
     phone: {type: String, required: true},
+    description: {type: String, required: true},
     email: {type: String, required: true},
     github: {type: String, required: true},
     city: {type: String, required: true},
@@ -13,10 +14,10 @@ const resumeSchema = new Schema({
     wished_salary: {type: Number, required: true},
     busyness: {type: String, required: true},
     userId: {type: ObjectId, ref: 'users'},
-    work_exp: [
+    exp_work: [
         {
-            from: {type: Date},
-            to: {type: Date},
+            from: {type: String},
+            to: {type: String},
             sphere: {type: String},
             organization: {type: String},
             responsibilities: {type: String}
@@ -27,7 +28,7 @@ const resumeSchema = new Schema({
         {
             profession: {type: String},
             education_institution: {type: String},
-            year_of_ending: {type: Number},
+            year_of_ending: {type: String},
             duration: {type: String},
         }
     ],

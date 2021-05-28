@@ -7,9 +7,11 @@ module.exports = function(req,res,next){
         return res.status(400).json({message:"Отсутствует токен"})
     }
     const decode = jwt.verify(token,config.get("SECRET_KEY"))
+    console.log(decode)
     if(!decode){
         return res.status(400).json({message:"Неверный токен"})
     }
+
     req.user = decode
     next()
 }
