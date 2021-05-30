@@ -14,6 +14,7 @@ const resumeSchema = new Schema({
     wished_salary: {type: Number, required: true},
     busyness: {type: String, required: true},
     userId: {type: ObjectId, ref: 'users'},
+    createdAt: {type: Date, default: Date.now},
     exp_work: [
         {
             from: {type: String},

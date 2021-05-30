@@ -3,8 +3,8 @@ require('./passportSetup')
 const {Router} = require('express')
 const router = Router()
 const jwt = require('jsonwebtoken')
-const config = require('config')
 const User = require('../models/user')
+const keys = require('../keys/index')
 
 router.get('/auth', passport.authenticate('github', {scope: ['profile', 'email']}))
 
@@ -15,7 +15,7 @@ router.get('/failed', (req, res) => {
 
 router.get('/successAuth', passport.authenticate('github', {failureRedirect: '/failed'}),
     (req, res) => {
-        const token = jwt.sign({id: req.user._id}, config.get('SECRET_KEY'), {expiresIn: '1m'})
+        const token = jwt.sign({id: req.user._id}, keys.SECRET_KEY, {expiresIn: '1m'})
         req.session.save((err) => {
             if (err) {
                 throw err
@@ -28,12 +28,12 @@ router.get('/successAuth', passport.authenticate('github', {failureRedirect: '/f
 router.post('/token/checkout', async (req, res) => {
     try {
         const {token} = req.body
-        const decode = jwt.verify(token, config.get('SECRET_KEY'))
+        const decode = jwt.verify(token, keys.SECRET_KEY)
         if (!decode) {
             return res.status(400).json({message: 'Неверный токен'})
         }
         const user = await User.findOne({_id: decode.id})
-        const newToken = jwt.sign({id: user._id}, config.get('SECRET_KEY'), {expiresIn: '24h'})
+        const newToken = jwt.sign({id: user._id}, keys.SECRET_KEY, {expiresIn: '24h'})
         return res.status(200).json({
             message: "GitHub авторизация прошла успешно",
             newToken

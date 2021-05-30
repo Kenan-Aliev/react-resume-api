@@ -2,22 +2,22 @@ const {Router} = require('express')
 const bcrypt = require('bcryptjs')
 const {check, validationResult} = require('express-validator')
 const jwt = require('jsonwebtoken')
-const config = require('config')
 const nodemailer = require('nodemailer')
 const router = Router()
 const User = require('../models/user')
 const regEmail = require('../emails/registration')
+const keys = require('../keys/index')
 
 const transporter = nodemailer.createTransport({
         host: 'smtp.mail.ru',
         port: 465,
         secure: true, // true for 465, false for other ports
         auth: {
-            user: config.get("FROM_EMAIL"),
-            pass: config.get("EMAIL_PASS")
+            user: keys.FROM_EMAIL,
+            pass: keys.EMAIL_PASS
         }
     }, {
-        from: `<${config.get("FROM_EMAIL")}>`
+        from: `<${keys.FROM_EMAIL}>`
     }
 )
 
@@ -32,7 +32,7 @@ router.post('/registration',
         try {
             const error = validationResult(req)
             if (!error.isEmpty()) {
-                return res.status(400).json({message:error.errors[0].msg})
+                return res.status(400).json({message: error.errors[0].msg})
             }
             const {email, username, password} = req.body
             const candidateEmail = await User.findOne({email})
@@ -43,19 +43,19 @@ router.post('/registration',
             if (candidateUsername) {
                 return res.status(400).json({message: "Пользователь с таким именем уже существует"})
             }
-            const token = jwt.sign({email, username, password}, config.get("SECRET_KEY"), {expiresIn: "3m"})
+            const token = jwt.sign({email, username, password}, keys.SECRET_KEY, {expiresIn: "3m"})
             await transporter.sendMail(regEmail(email, token))
             return res.status(200).json({message: "Перейдите на почту чтобы подтвердить регистрацию"})
 
         } catch (error) {
-            return res.status(500).json({message:"Что-то пошло не так,повторите попытку",error})
+            return res.status(500).json({message: "Что-то пошло не так,повторите попытку", error})
         }
     })
 
 router.post('/verification', async (req, res) => {
     try {
         const {token} = req.body
-        const decode = jwt.verify(token, config.get("SECRET_KEY"))
+        const decode = jwt.verify(token, keys.SECRET_KEY)
         const hashPassword = await bcrypt.hash(decode.password, 10)
         const newUser = new User({
             email: decode.email,
@@ -65,7 +65,7 @@ router.post('/verification', async (req, res) => {
         await newUser.save()
         return res.status(200).json({message: "Вы успешно зарегистрировались на нашем сайте"})
     } catch (error) {
-        return res.status(500).json({message:"Неверный токен или срок его действия истек",error})
+        return res.status(500).json({message: "Неверный токен или срок его действия истек", error})
     }
 })
 
@@ -83,7 +83,7 @@ router.post('/login', async (req, res) => {
         const token = jwt.sign({
             id: candidate._id,
             email: candidate.email
-        }, config.get("SECRET_KEY"), {expiresIn: '24h'})
+        }, keys.SECRET_KEY, {expiresIn: '24h'})
         // req.session.user = candidate
         // req.session.save((err) => {
         //     if (err) {

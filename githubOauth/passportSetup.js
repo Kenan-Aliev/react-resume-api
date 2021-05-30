@@ -1,7 +1,7 @@
 const passport = require('passport');
 const GitHubStrategy = require('passport-github').Strategy;
 const User = require('../models/user')
-const config = require('config')
+const keys = require('../keys/index')
 
 passport.serializeUser(function (user, done) {
     done(null, user._id)
@@ -15,9 +15,9 @@ passport.deserializeUser(async function (id, done) {
 
 
 passport.use(new GitHubStrategy({
-        clientID: config.get("CLIENT_ID"),
-        clientSecret: config.get("CLIENT_SECRET"),
-        callbackURL: "http://localhost:5000/github/successAuth"
+        clientID: keys.CLIENT_ID,
+        clientSecret: keys.CLIENT_SECRET,
+        callbackURL: `${keys.BASE_URL}/github/successAuth`
     },
     async function (accessToken, refreshToken, profile, done) {
         const user = await User.findOne({githubId: profile.id})

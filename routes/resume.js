@@ -43,4 +43,14 @@ router.get('/getAll', async (req, res) => {
     }
 })
 
+
+router.get('/getUserResume/:resumeId', authMiddleware, async (req, res) => {
+    try {
+        const resume = await Resume.findOne({_id: req.params.resumeId, userId: req.user.id})
+        return res.status(200).json({resume})
+    } catch (error) {
+        return res.status(500).json({message: "Что-то пошло не так"})
+    }
+})
+
 module.exports = router
